@@ -1,0 +1,33 @@
+(rule
+ (alias create-actions)
+ (deps (universe))
+ (action
+  (progn
+   (system "mkdir -p ../../actions")
+   (pipe-outputs
+    (system "cd ../.. && git ls-files")
+    (system "xargs tar c -C ../..")
+    (system
+     "podman run --rm -i docker.io/ocamlpro/ocaml:5.0.0 sh -xc '(tar x && opam switch create . ocaml-system.5.0.0 --deps-only && opam exec -- dune build --release) >&2 && tar c -hC _build/install/default/bin .'")
+    (system "tar -C ../../actions -vx"))
+   (system "cd ../../actions && mv -f avatar-bot exec")
+   (system "cd ../../actions && zip avatar-bot exec"))))
+
+(rule
+ (alias deploy)
+ (deps (universe))
+ (action
+  (system
+   "cd ../.. && ibmcloud fn action create avatar-bot --native actions/avatar-bot.zip --param bot_token $BOT_TOKEN --web true")))
+
+(rule
+ (alias redeploy)
+ (deps (universe))
+ (action
+  (system
+   "cd ../.. && ibmcloud fn action update avatar-bot --native actions/avatar-bot.zip")))
+
+(env
+ (release
+  (flags
+   (:standard -cclib -static -cclib -no-pie))))
