@@ -9,8 +9,18 @@ let token =
 
 let get_me = Printf.sprintf "https://api.telegram.org/bot%s/getMe"
 
-let () =
+let set_logging () =
+  Logs.set_reporter (Logs_fmt.reporter ());
+  Logs.set_level (Some Logs.Info)
+
+let main () =
+  set_logging ();
+
+  Logs.info (fun m -> m "Input parameters: %s" Sys.argv.(1));
+
   Lwt_main.run
     ( token |> get_me |> Uri.of_string |> Client.get >>= fun (resp, _body) ->
       resp |> Response.status |> Code.code_of_status
       |> Lwt_io.printf "{\"body\":\"%d\"}" )
+
+let () = main ()
