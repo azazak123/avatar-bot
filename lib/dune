@@ -1,2 +1,4 @@
 (library
- (name avatar_bot))
+ (name avatar_bot)
+ (preprocess
+  (pps ppx_deriving.show)))
