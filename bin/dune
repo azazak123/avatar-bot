@@ -1,4 +1,4 @@
 (executable
  (public_name avatar-bot)
  (name main)
- (libraries avatar_bot cohttp cohttp-lwt-unix lwt.unix yojson logs))
+ (libraries avatar_bot cohttp-lwt-unix yojson logs))
