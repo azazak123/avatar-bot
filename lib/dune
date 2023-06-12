@@ -1,4 +1,5 @@
 (library
  (name avatar_bot)
+ (libraries cohttp-lwt-unix)
  (preprocess
   (pps ppx_deriving.show)))
