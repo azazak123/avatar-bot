@@ -1,4 +1,4 @@
-type error =
+type t =
   | BotTokenNotExist
       [@printer
         fun fmt _ -> fprintf fmt "Bot token is not exist in input parameters"]

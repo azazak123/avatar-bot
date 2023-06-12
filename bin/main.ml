@@ -14,7 +14,7 @@ let main () =
   match Result.ok @@ Printf.printf {|{"body": { "result":"%b"} }|} true with
   | Ok () -> ()
   | Error err ->
-      Logs.err (fun m -> m "Error: %s." (Error.show_error err));
+      Logs.err (fun m -> m "Error: %s." (Error.show err));
       Printf.printf {|{"body": { "result":"%b"} }|} false;
       Stdlib.exit 1
 
