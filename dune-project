@@ -17,6 +17,13 @@
  (name avatar-bot)
  (synopsis "Avatar bot for telegram")
  (description "Avatar bot for telegram")
- (depends ocaml dune cohttp-lwt-unix tls-lwt yojson logs ppx_deriving))
+ (depends
+  ocaml
+  dune
+  cohttp-lwt-unix
+  tls-lwt
+  logs
+  ppx_deriving
+  ppx_deriving_yojson))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project

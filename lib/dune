@@ -1,5 +1,5 @@
 (library
  (name avatar_bot)
- (libraries cohttp-lwt-unix)
+ (libraries cohttp-lwt-unix ppx_deriving_yojson.runtime)
  (preprocess
-  (pps ppx_deriving.show)))
+  (pps ppx_deriving.show ppx_deriving_yojson)))

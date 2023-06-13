@@ -1,10 +1,5 @@
 type t =
-  | BotTokenNotExist
+  | FieldNotExist of string
       [@printer
-        fun fmt _ -> fprintf fmt "Bot token is not exist in input parameters"]
-  | ChatIdNotExist
-      [@printer
-        fun fmt _ ->
-          fprintf fmt
-            "Field \"message > chat > id\" is not exist in input parameters"]
+        fun fmt -> fprintf fmt "Field \"%s\" is not exist in input parameters"]
 [@@deriving show]
