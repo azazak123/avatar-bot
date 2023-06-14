@@ -10,7 +10,10 @@ bug-reports: "https://github.com/azazak123/avatar-bot/issues"
 depends: [
   "ocaml"
   "dune" {>= "3.7"}
+  "lwt"
+  "cohttp"
   "cohttp-lwt-unix"
+  "uri"
   "tls-lwt"
   "logs"
   "ppx_deriving"

@@ -13,6 +13,8 @@
 
 (license MIT)
 
+(implicit_transitive_deps false)
+
 (package
  (name avatar-bot)
  (synopsis "Avatar bot for telegram")
@@ -20,7 +22,10 @@
  (depends
   ocaml
   dune
+  lwt
+  cohttp
   cohttp-lwt-unix
+  uri
   tls-lwt
   logs
   ppx_deriving
