@@ -1,5 +1,3 @@
-open Avatar_bot
-
 type t = Start of string * int
 
 let welcome token chat_id =
