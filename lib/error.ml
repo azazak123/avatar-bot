@@ -3,5 +3,3 @@ type t =
       [@printer
         fun fmt -> fprintf fmt "Field \"%s\" is not exist in input parameters"]
 [@@deriving show]
-
-let show err : string = show err
