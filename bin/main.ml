@@ -1,16 +1,27 @@
-open Lwt
-open Cohttp
-open Cohttp_lwt_unix
+open Avatar_bot
 
-let token =
-  let open Yojson.Basic in
-  let json = from_string Sys.argv.(1) in
-  json |> Util.member "bot_token" |> Util.to_string
+let set_logging () =
+  Logs.set_reporter (Logs_fmt.reporter ());
+  Logs.set_level (Some Logs.Info)
 
-let get_me = Printf.sprintf "https://api.telegram.org/bot%s/getMe"
+let main () =
+  set_logging ();
 
-let () =
-  Lwt_main.run
-    ( token |> get_me |> Uri.of_string |> Client.get >>= fun (resp, _body) ->
-      resp |> Response.status |> Code.code_of_status
-      |> Lwt_io.printf "{\"body\":\"%d\"}" )
+  let json_string = Sys.argv.(1) in
+
+  Logs.info (fun m -> m "Input parameters: %s" json_string);
+
+  match
+    let ( let* ) = Result.bind in
+    let* parameters = Input_parameters.of_string json_string in
+
+    Lwt_main.run @@ Command.process
+    @@ Command.Start (parameters.bot_token, parameters.message.chat.id)
+  with
+  | Ok () -> ()
+  | Error err ->
+      Logs.err (fun m -> m "Error: %s." (Error.show err));
+      Printf.printf {|{"body": { "result":"%b"} }|} false;
+      Stdlib.exit 1
+
+let () = main ()

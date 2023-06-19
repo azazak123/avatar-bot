@@ -13,10 +13,22 @@
 
 (license MIT)
 
+(implicit_transitive_deps false)
+
 (package
  (name avatar-bot)
  (synopsis "Avatar bot for telegram")
  (description "Avatar bot for telegram")
- (depends ocaml dune cohttp cohttp-lwt-unix tls-lwt yojson))
+ (depends
+  ocaml
+  dune
+  lwt
+  cohttp
+  cohttp-lwt-unix
+  uri
+  tls-lwt
+  logs
+  ppx_deriving
+  ppx_deriving_yojson))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project
