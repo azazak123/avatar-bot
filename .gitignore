@@ -43,5 +43,8 @@ _opam/
 .history
 .ionide
 
+### Nix-direnv cache ###
+.direnv
+
 ### Prepared functions ###
 actions/
