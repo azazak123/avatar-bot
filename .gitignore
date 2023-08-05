@@ -45,3 +45,9 @@ _opam/
 
 ### Prepared functions ###
 actions/
+
+### Nix-direnv cache ###
+.direnv
+
+### Nix build output ###
+result
