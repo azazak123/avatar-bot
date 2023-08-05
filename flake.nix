@@ -38,6 +38,8 @@
 
       getDevPackages = pkgs:
         with pkgs;[
+          zip
+
           # Nix tools
           nil
           nixpkgs-fmt
@@ -135,4 +137,3 @@
         }
       );
 }
-
