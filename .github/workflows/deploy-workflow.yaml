@@ -1,0 +1,22 @@
+name: "Deploy workflow"
+on:
+  push:
+    branches:
+      - "master"
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: cachix/install-nix-action@v22
+      with:
+        github_access_token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: dprosper/ic-setup-cli@v0.1.2
+      with:
+        API_KEY: ${{ secrets.API_KEY }}
+        INSTALL_PLUGINS: cloud-functions
+        REGION: eu-de
+    - name: Build static
+      run: nix develop --command dune build @create-actions
+    - name: Redeploy
+      run: nix develop --command dune build @redeploy
