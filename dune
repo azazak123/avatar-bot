@@ -3,7 +3,6 @@
  (deps (universe))
  (action
   (progn
-   (system "nix build .#static")
    (system "mkdir -p ../../actions")
    (system "cd ../../actions && cp -f ../result/bin/avatar-bot exec")
    (system "cd ../../actions && zip avatar-bot exec"))))

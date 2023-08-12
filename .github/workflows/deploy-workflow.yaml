@@ -16,7 +16,11 @@ jobs:
         API_KEY: ${{ secrets.API_KEY }}
         INSTALL_PLUGINS: cloud-functions
         REGION: eu-de
+    - name: Setup ibmcloud
+      run: ibmcloud fn namespace target Avatar-bot
     - name: Build static
+      run: nix build .#static
+    - name: Create actions
       run: nix develop --command dune build @create-actions
     - name: Redeploy
       run: nix develop --command dune build @redeploy
