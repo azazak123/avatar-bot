@@ -28,7 +28,8 @@
   uri
   tls-lwt
   logs
+  yojson
   ppx_deriving
-  ppx_deriving_yojson))
+  ppx_yojson_conv))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project

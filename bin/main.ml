@@ -12,8 +12,7 @@ let main () =
   Logs.info (fun m -> m "Input parameters: %s" json_string);
 
   match
-    let ( let* ) = Result.bind in
-    let* parameters = Input_parameters.of_string json_string in
+    let parameters = Input_parameters.of_string json_string in
 
     Lwt_main.run @@ Command.process
     @@ Command.Start (parameters.bot_token, parameters.message.chat.id)
