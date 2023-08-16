@@ -16,8 +16,9 @@ depends: [
   "uri"
   "tls-lwt"
   "logs"
+  "yojson"
   "ppx_deriving"
-  "ppx_deriving_yojson"
+  "ppx_yojson_conv"
   "odoc" {with-doc}
 ]
 build: [

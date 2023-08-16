@@ -1,13 +1,11 @@
-open Ppx_deriving_yojson_runtime
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 
-type chat = { id : int } [@@deriving of_yojson { strict = false }]
-type message = { chat : chat } [@@deriving of_yojson { strict = false }]
+type chat = { id : int } [@@deriving of_yojson] [@@yojson.allow_extra_fields]
+
+type message = { chat : chat }
+[@@deriving of_yojson] [@@yojson.allow_extra_fields]
 
 type t = { bot_token : string; message : message }
-[@@deriving of_yojson { strict = false }]
+[@@deriving of_yojson] [@@yojson.allow_extra_fields]
 
-let of_string str =
-  let json = Yojson.Safe.from_string str in
-  match of_yojson json with
-  | Result.Ok parameters -> Ok parameters
-  | Result.Error error_str -> Error (Error.FieldNotExist error_str)
+let of_string str = str |> Yojson.Safe.from_string |> t_of_yojson
