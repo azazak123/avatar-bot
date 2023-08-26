@@ -13,9 +13,11 @@ let main () =
 
   match
     let parameters = Input_parameters.of_string json_string in
+    let command = Input_parameters.to_command parameters in
 
-    Lwt_main.run @@ Command.process
-    @@ Command.Start (parameters.bot_token, parameters.message.chat.id)
+    Logs.info (fun m -> m "Command: %s" (Command.show command));
+
+    Lwt_main.run @@ Command.process command
   with
   | Ok () -> ()
   | Error err ->
