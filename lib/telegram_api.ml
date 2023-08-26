@@ -25,3 +25,11 @@ let get_file token file_id =
     |> tg_response_of_yojson file_of_yojson
   in
   Lwt.return tg_response.result
+
+let download_file token file_path =
+  let ( let* ) = Lwt.bind in
+  let* _resp, body =
+    Client.get @@ Uri.of_string
+    @@ Printf.sprintf "https://api.telegram.org/file/bot%s/%s" token file_path
+  in
+  Cohttp_lwt.Body.to_string body
