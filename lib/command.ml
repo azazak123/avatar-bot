@@ -1,6 +1,10 @@
 type t =
-  | Start of { token : string; chat_id : int }
-  | TransformImage of { token : string; chat_id : int; file_id : string }
+  | Start of { token : string; [@opaque] chat_id : int }
+  | TransformImage of {
+      token : string; [@opaque]
+      chat_id : int;
+      file_id : string;
+    }
 [@@deriving show]
 
 let welcome token chat_id =
