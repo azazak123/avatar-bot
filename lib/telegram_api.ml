@@ -1,4 +1,5 @@
 open Cohttp_lwt_unix
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 
 type 'a tg_response = { ok : bool; result : 'a }
 [@@deriving of_yojson] [@@yojson.allow_extra_fields]
