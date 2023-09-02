@@ -106,7 +106,10 @@
                 doNixSupport = false;
                 removeOcamlReferences = true;
 
-                buildInputs = attr.buildInputs ++ [ pkgs.pkgsStatic.gmp ];
+                buildInputs = attr.buildInputs ++ [
+                  pkgs.pkgsStatic.gmp
+                  pkgs.pkgsStatic.libffi
+                ];
 
                 buildPhase = "dune build -p avatar-bot --profile static";
               }
