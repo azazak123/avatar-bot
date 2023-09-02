@@ -33,7 +33,7 @@ let send_photo token chat_id file =
          boundary chat_id boundary file boundary
   in
   let headers =
-    Http.Header.add (Http.Header.init ()) "Content-Type"
+    Cohttp.Header.add (Cohttp.Header.init ()) "Content-Type"
     @@ "multipart/form-data; boundary=" ^ boundary
   in
   Client.post ~body ~headers @@ Uri.of_string
