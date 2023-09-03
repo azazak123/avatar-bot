@@ -29,6 +29,8 @@
   tls-lwt
   logs
   yojson
+  bimage
+  bimage-unix
   ppx_deriving
   ppx_yojson_conv))
 
