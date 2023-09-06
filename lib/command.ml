@@ -28,10 +28,18 @@ let transform_image token chat_id file_id =
   close_out file;
 
   Logs.info (fun m -> m "Load image from %s" fname);
-  let image = Result.get_ok @@ Bimage_unix.Stb.read_u8 Bimage.Color.rgb fname in
+  let stb_image = Result.get_ok @@ Stb_image.load fname in
+
+  (* Get Bimage.Image from Stb_image *)
+  let width = Stb_image.width stb_image in
+  let height = Stb_image.height stb_image in
+  let channels = Stb_image.channels stb_image in
+  let image =
+    Bimage.Image.of_data Bimage.Color.rgb width height
+      (Stb_image.data stb_image)
+  in
 
   Logs.info (fun m -> m "Edit loaded image");
-  let width, height, _channel = Bimage.Image.shape image in
   let thickness = 35 in
   let r = (min width height / 2) - thickness in
   let c_x = width / 2 in
@@ -49,7 +57,8 @@ let transform_image token chat_id file_id =
   (* Save edited image to file *)
   let fname = Filename.temp_file "" "" in
   Logs.info (fun m -> m "Save edited image in %s" fname);
-  let () = Result.get_ok @@ Bimage_unix.Stb.write_png fname image in
+  Stb_image_write.png fname ~w:width ~h:height ~c:channels
+    (Bimage.Image.data image);
 
   Logs.info (fun m -> m "Load edited image from %s" fname);
   let file = open_in_bin fname in

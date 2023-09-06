@@ -30,7 +30,9 @@
   logs
   yojson
   bimage
-  bimage-unix
+  stb_image
+  stb_image_write
+  result
   ppx_deriving
   ppx_yojson_conv))
 
