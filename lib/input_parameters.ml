@@ -5,7 +5,14 @@ type chat = { id : int } [@@deriving of_yojson] [@@yojson.allow_extra_fields]
 type photo = { file_id : string }
 [@@deriving of_yojson] [@@yojson.allow_extra_fields]
 
-type message = { chat : chat; photo : photo array option [@yojson.option] }
+type document = { file_id : string; mime_type : string }
+[@@deriving of_yojson] [@@yojson.allow_extra_fields]
+
+type message = {
+  chat : chat;
+  photo : photo array option; [@yojson.option]
+  document : document option; [@yojson.option]
+}
 [@@deriving of_yojson] [@@yojson.allow_extra_fields]
 
 type t = { bot_token : string; message : message }
@@ -14,14 +21,22 @@ type t = { bot_token : string; message : message }
 let of_string str = str |> Yojson.Safe.from_string |> t_of_yojson
 
 let to_command parameters =
-  match parameters.message.photo with
-  | Some arr ->
+  match (parameters.message.photo, parameters.message.document) with
+  | Some photo, _ ->
       Command.TransformImage
         {
           token = parameters.bot_token;
           chat_id = parameters.message.chat.id;
-          file_id = arr.(Array.length arr - 1).file_id;
+          file_id = photo.(Array.length photo - 1).file_id;
         }
-  | None ->
+  | _, Some { file_id; mime_type }
+    when mime_type = "image/jpeg" || mime_type = "image/png" ->
+      Command.TransformImage
+        {
+          token = parameters.bot_token;
+          chat_id = parameters.message.chat.id;
+          file_id;
+        }
+  | _, _ ->
       Command.Start
         { token = parameters.bot_token; chat_id = parameters.message.chat.id }
