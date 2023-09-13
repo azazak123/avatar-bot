@@ -13,7 +13,7 @@ let send_message token chat_id text =
        "https://api.telegram.org/bot%s/sendMessage?chat_id=%d&text=%s" token
        chat_id text
 
-let send_photo token chat_id file =
+let send_item chat_id param_name filename mime_type binary url =
   Random.self_init ();
   let boundary = ( ^ ) "-----" @@ Int64.to_string @@ Random.bits64 () in
   let body =
@@ -24,20 +24,28 @@ let send_photo token chat_id file =
           \r\n\
           %d\r\n\
           --%s\r\n\
-          Content-Disposition: form-data; name=\"photo\"; \
-          filename=\"image.png\"\r\n\
-          Content-Type: image/png\r\n\
+          Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"\r\n\
+          Content-Type: %s\r\n\
           \r\n\
           %s\r\n\
           --%s--\r\n"
-         boundary chat_id boundary file boundary
+         boundary chat_id boundary param_name filename mime_type binary boundary
   in
   let headers =
     Cohttp.Header.add (Cohttp.Header.init ()) "Content-Type"
     @@ "multipart/form-data; boundary=" ^ boundary
   in
-  Client.post ~body ~headers @@ Uri.of_string
+  Client.post ~body ~headers url
+
+let send_photo token chat_id photo =
+  send_item chat_id "photo" "image.png" "image/png" photo
+  @@ Uri.of_string
   @@ Printf.sprintf "https://api.telegram.org/bot%s/sendPhoto" token
+
+let send_document token chat_id document filename mime_type =
+  send_item chat_id "document" filename mime_type document
+  @@ Uri.of_string
+  @@ Printf.sprintf "https://api.telegram.org/bot%s/sendDocument" token
 
 let get_file token file_id =
   let ( let* ) = Lwt.bind in
