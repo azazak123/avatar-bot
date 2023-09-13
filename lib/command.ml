@@ -65,8 +65,11 @@ let transform_image token chat_id file_id =
   let binary = In_channel.input_all file in
   close_in file;
 
-  Logs.info (fun m -> m "Send file %s to the chat %d" fname chat_id);
-  Telegram_api.send_photo token chat_id binary
+  Logs.info (fun m -> m "Send photo %s to the chat %d" fname chat_id);
+  let* _res, _body = Telegram_api.send_photo token chat_id binary in
+
+  Logs.info (fun m -> m "Send document %s to the chat %d" fname chat_id);
+  Telegram_api.send_document token chat_id binary "image.png" "image/png"
 
 let process command =
   let ( let* ) = Lwt.bind in
