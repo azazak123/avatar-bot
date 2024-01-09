@@ -9,19 +9,25 @@ let ukrainianize binary =
   let stb_image = Result.get_ok @@ Stb_image.load fname in
 
   (* Get Bimage.Image from Stb_image *)
-  let width = Stb_image.width stb_image in
-  let height = Stb_image.height stb_image in
-  let channels = Stb_image.channels stb_image in
-  let image =
-    Bimage.Image.of_data Bimage.Color.rgb width height
+  let width_avatar = Stb_image.width stb_image in
+  let height_avatar = Stb_image.height stb_image in
+  let channels_avatar = Stb_image.channels stb_image in
+  let avatar_image =
+    Bimage.Image.of_data Bimage.Color.rgb width_avatar height_avatar
       (Stb_image.data stb_image)
   in
 
   Logs.info (fun m -> m "Edit loaded image");
   let thickness = 35 in
-  let r = (min width height / 2) - thickness in
+
+  let width = width_avatar + (2 * thickness) in
+  let height = height_avatar + (2 * thickness) in
+
+  let r = min width_avatar height_avatar / 2 in
   let c_x = width / 2 in
   let c_y = height / 2 in
+
+  let image = Bimage.Image.v Bimage.u8 Bimage.Color.rgb width height in
 
   for x = 0 to width do
     for y = 0 to height do
@@ -29,13 +35,18 @@ let ukrainianize binary =
         Bimage.Image.set_pixel image x y
           (Bimage.Pixel.v Bimage.Color.rgb
              (if y < c_y then [ 0.; 0.34; 0.72 ] else [ 1.; 0.84; 0. ]))
+      else
+        let x_avatar = x - thickness in
+        let y_avatar = y - thickness in
+        Bimage.Image.set_pixel image x y
+          (Bimage.Image.get_pixel avatar_image x_avatar y_avatar)
     done
   done;
 
   (* Save edited image to file *)
   let fname = Filename.temp_file "" "" in
   Logs.info (fun m -> m "Save edited image in %s" fname);
-  Stb_image_write.png fname ~w:width ~h:height ~c:channels
+  Stb_image_write.png fname ~w:width ~h:height ~c:channels_avatar
     (Bimage.Image.data image);
 
   Logs.info (fun m -> m "Load edited image from %s" fname);
