@@ -23,6 +23,7 @@
   ocaml
   dune
   lwt
+  dream
   cohttp
   cohttp-lwt-unix
   uri

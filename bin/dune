@@ -1,4 +1,4 @@
 (executable
  (public_name avatar-bot)
  (name main)
- (libraries avatar_bot logs lwt.unix))
+ (libraries avatar_bot logs lwt lwt.unix dream))
