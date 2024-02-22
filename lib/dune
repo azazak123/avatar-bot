@@ -5,6 +5,7 @@
  (libraries
   lwt
   lwt.unix
+  dream
   cohttp
   cohttp-lwt
   cohttp-lwt-unix

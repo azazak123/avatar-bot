@@ -4,4 +4,4 @@ type t =
 
 val pp : Format.formatter -> t -> unit
 val show : t -> string
-val process : t -> (unit, 'a) result Lwt.t
+val process : t -> (int, int) result Lwt.t

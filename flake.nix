@@ -108,6 +108,8 @@
 
                 buildInputs = attr.buildInputs ++ [
                   pkgs.pkgsStatic.gmp
+                  pkgs.pkgsStatic.openssl
+                  pkgs.pkgsStatic.libev
                 ];
 
                 buildPhase = "dune build -p avatar-bot --profile static";
