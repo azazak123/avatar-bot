@@ -11,7 +11,7 @@ let main () =
   let parameters = Input_parameters.of_string json_string in
 
   let command = Input_parameters.to_command parameters in
-  
+
   Logs.info (fun m -> m "Command: %s" (Command.show command));
 
   let* res = Command.process command in
@@ -19,9 +19,17 @@ let main () =
   Dream.json
   @@
   match res with
-  | Ok () -> Printf.sprintf {|{"body": { "result":"%b"} }|} true
-  | Error err ->
-      Logs.err (fun m -> m "Error: %s." (Error.show err));
-      Printf.sprintf {|{"body": { "result":"%b"} }|} false
+  | Ok _ ->
+      ({ ok = true; error_code = None; description = None } : Response.t)
+      |> Response.to_string
+  | Error code ->
+      Logs.err (fun m -> m "Error: %d" code);
+      ({
+         ok = false;
+         error_code = Some code;
+         description = Some "Something went wrong";
+       }
+        : Response.t)
+      |> Response.to_string
 
 let () = main ()

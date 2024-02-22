@@ -38,6 +38,7 @@ let process command =
         transform_image token chat_id file_id
   in
   resp |> Cohttp.Response.status |> Cohttp.Code.code_of_status
-  |> (function code when code >= 200 && code < 300 -> true | _ -> false)
-  |> Lwt_io.printf {|{"body": { "result":"%b" } }|}
-  |> Lwt.map Result.ok
+  |> (function
+       | code when code >= 200 && code < 300 -> Result.Ok code
+       | code -> Result.Error code)
+  |> Lwt.return
