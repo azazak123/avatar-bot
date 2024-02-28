@@ -1,7 +1,10 @@
 open Avatar_bot
 
 let main () =
-  Dream.run @@ Dream.logger
+  let port_opt = Option.bind (Sys.getenv_opt "PORT") int_of_string_opt in
+  let port = if Option.is_none port_opt then 8080 else Option.get port_opt in
+
+  Dream.run ~port:port @@ Dream.logger
   @@ fun request ->
   let ( let* ) = Lwt.bind in
 

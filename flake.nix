@@ -114,6 +114,12 @@
                   getOcamlDevPackages pkgs scope
                   ++ getDevPackages pkgs
                   ++ getIbmcloud nixpkgs-unstable.legacyPackages.${system};
+
+                shellHook = ''
+                  set -a
+                  source .env
+                  set +a
+                '';
               };
           }
         );
@@ -155,6 +161,12 @@
             buildInputs = getOcamlDevPackages pkgs scopeMusl
               ++ getDevPackages pkgs
               ++ getIbmcloud nixpkgs-unstable.legacyPackages.x86_64-linux;
+
+            shellHook = ''
+              set -a
+              source .env
+              set +a
+            '';
           };
         }
       );

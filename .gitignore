@@ -51,3 +51,6 @@ actions/
 
 ### Nix build output ###
 result
+
+### Environment variables ###
+.env
