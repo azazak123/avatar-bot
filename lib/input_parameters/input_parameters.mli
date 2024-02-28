@@ -8,7 +8,7 @@ type message = {
   document : document option;
 }
 
-type t = { bot_token : string; message : message }
+type t = { message : message }
 
 val of_string : string -> t
-val to_command : t -> Command.t
+val to_command : string -> t -> Command.t

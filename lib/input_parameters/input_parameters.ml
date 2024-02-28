@@ -15,28 +15,23 @@ type message = {
 }
 [@@deriving of_yojson] [@@yojson.allow_extra_fields]
 
-type t = { bot_token : string; message : message }
+type t = { message : message }
 [@@deriving of_yojson] [@@yojson.allow_extra_fields]
 
 let of_string str = str |> Yojson.Safe.from_string |> t_of_yojson
 
-let to_command parameters =
+let to_command bot_token parameters =
   match (parameters.message.photo, parameters.message.document) with
   | Some photo, _ ->
       Command.TransformImage
         {
-          token = parameters.bot_token;
+          token = bot_token;
           chat_id = parameters.message.chat.id;
           file_id = photo.(Array.length photo - 1).file_id;
         }
   | _, Some { file_id; mime_type }
     when mime_type = "image/jpeg" || mime_type = "image/png" ->
       Command.TransformImage
-        {
-          token = parameters.bot_token;
-          chat_id = parameters.message.chat.id;
-          file_id;
-        }
+        { token = bot_token; chat_id = parameters.message.chat.id; file_id }
   | _, _ ->
-      Command.Start
-        { token = parameters.bot_token; chat_id = parameters.message.chat.id }
+      Command.Start { token = bot_token; chat_id = parameters.message.chat.id }
