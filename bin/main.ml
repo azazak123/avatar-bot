@@ -1,10 +1,24 @@
 open Avatar_bot
 
+let set_logging () =
+  Logs.set_reporter @@ Logs_fmt.reporter ();
+  Logs.set_level @@ Some Logs.Info
+
 let main () =
+  set_logging ();
+
   let port_opt = Option.bind (Sys.getenv_opt "PORT") int_of_string_opt in
   let port = if Option.is_none port_opt then 8080 else Option.get port_opt in
 
-  Dream.run ~port:port @@ Dream.logger
+  let bot_token_opt = Sys.getenv_opt "BOT_TOKEN" in
+  let bot_token =
+    if Option.is_some bot_token_opt then Option.get bot_token_opt
+    else (
+      Logs.err (fun m -> m "BOT_TOKEN env was not found");
+      exit 1)
+  in
+
+  Dream.run ~port @@ Dream.logger
   @@ fun request ->
   let ( let* ) = Lwt.bind in
 
@@ -13,7 +27,7 @@ let main () =
 
   let parameters = Input_parameters.of_string json_string in
 
-  let command = Input_parameters.to_command parameters in
+  let command = Input_parameters.to_command bot_token parameters in
 
   Logs.info (fun m -> m "Command: %s" (Command.show command));
 
