@@ -18,8 +18,6 @@
         "x86_64-linux"
       ];
 
-      createScope = pkgs: on: on.buildDuneProject { pkgs = pkgs; } package ./. query;
-
       # Packages from devPackagesQuery
       getOcamlDevPackages = pkgs: scope:
         builtins.attrValues
@@ -35,6 +33,8 @@
       query = devPackagesQuery // {
         ocaml-base-compiler = "*";
       };
+
+      createScope = pkgs: on: on.buildDuneProject { pkgs = pkgs; } package ./. query;
 
       getDevPackages = pkgs:
         with pkgs;[
@@ -69,12 +69,37 @@
             f system pkgs scope
           );
 
+      getDockerImage = pkgs: pkg: pkgs.dockerTools.buildImage {
+        name = package;
+        tag = "latest";
+        created = "now";
+
+        copyToRoot = pkgs.buildEnv {
+          name = "image-root";
+          paths = [ pkg pkgs.iana-etc ];
+          pathsToLink = [ "/bin" "/etc" ];
+        };
+
+        extraCommands = ''
+          mkdir -p ./tmp
+        '';
+
+        config = {
+          Cmd = [ "/bin/${package}" ];
+          Env = [ "SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt" ];
+          ExposedPorts = {
+            "80/tcp" = { };
+          };
+        };
+      };
+
     in
     nixpkgs.lib.recursiveUpdate
       rec {
-        packages = forSystems (_: _: scope:
-          {
+        packages = forSystems (_: pkgs: scope:
+          rec {
             default = scope.${package};
+            docker = getDockerImage pkgs default;
           }
         );
 
@@ -104,7 +129,6 @@
               (attr: {
                 # Prevent the ocaml dependencies from leaking into dependent environments
                 doNixSupport = false;
-                removeOcamlReferences = true;
 
                 buildInputs = attr.buildInputs ++ [
                   pkgs.pkgsStatic.gmp
@@ -115,22 +139,16 @@
                 buildPhase = "dune build -p avatar-bot --profile static";
               }
               );
-
-            conf-gmp = prev.conf-gmp.overrideAttrs (attr: {
-              depsBuildBuild = [ pkgs.stdenv.cc ];
-            });
-
-            conf-gmp-powm-sec = prev.conf-gmp-powm-sec.overrideAttrs (attr: {
-              depsBuildBuild = [ pkgs.stdenv.cc ];
-            });
           };
 
           scopeMusl =
             ((createScope pkgsMusl on).overrideScope' overlayMusl);
           mainMusl = scopeMusl.${package};
         in
-        {
+        rec {
           packages.x86_64-linux.static = mainMusl;
+          packages.x86_64-linux.staticDocker =
+            getDockerImage pkgs packages.x86_64-linux.static;
 
           devShells.x86_64-linux.static = pkgsMusl.mkShell {
             inputsFrom = [ mainMusl ];
