@@ -10,6 +10,11 @@ let main () =
   let port_opt = Option.bind (Sys.getenv_opt "PORT") int_of_string_opt in
   let port = if Option.is_none port_opt then 8080 else Option.get port_opt in
 
+  let host_opt = Sys.getenv_opt "HOST" in
+  let host =
+    if Option.is_none port_opt then "localhost" else Option.get host_opt
+  in
+
   let bot_token_opt = Sys.getenv_opt "BOT_TOKEN" in
   let bot_token =
     if Option.is_some bot_token_opt then Option.get bot_token_opt
@@ -18,7 +23,7 @@ let main () =
       exit 1)
   in
 
-  Dream.run ~port @@ Dream.logger
+  Dream.run ~port ~interface:host @@ Dream.logger
   @@ fun request ->
   let ( let* ) = Lwt.bind in
 
