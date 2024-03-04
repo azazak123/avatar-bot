@@ -3,24 +3,49 @@ on:
   push:
     branches:
       - "master"
+
+env:
+  PROJECT_ID: pure-feat-410619
+  REGION: europe
+  IMAGE_LOCATION: europe-docker.pkg.dev/pure-feat-410619/avatar-bot
+  IMAGE: avatar-bot:latest
+  SERVICE: avatar-bot
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - uses: cachix/install-nix-action@v22
+
+    - name: Install Nix
+      uses: cachix/install-nix-action@v22
       with:
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
-    - uses: dprosper/ic-setup-cli@v0.1.2
+
+    - name: GCP auth
+      uses: google-github-actions/auth@v1
       with:
-        API_KEY: ${{ secrets.API_KEY }}
-        INSTALL_PLUGINS: cloud-functions
-        REGION: eu-de
-    - name: Setup ibmcloud
-      run: ibmcloud fn namespace target Avatar-bot
-    - name: Build static
-      run: nix build .#static
-    - name: Create actions
-      run: nix develop --command dune build @create-actions
-    - name: Redeploy
-      run: nix develop --command dune build @redeploy
+        credentials_json: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+      
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+
+    - name: Docker auth
+      run: |
+        gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+    - name: Build image
+      run: |
+        nix build .#staticDocker
+        docker load --input result
+        docker tag ${{ env.IMAGE }} ${{ env.IMAGE_LOCATION }}/${{ env.IMAGE }}
+
+    - name: Push image
+      run: docker push ${{ env.IMAGE_LOCATION }}/${{ env.IMAGE }}
+
+    - name: Deploy to cloud run
+      run: |
+        gcloud run deploy ${{ env.SERVICE }} --region europe-west1 \
+        --image ${{ env.IMAGE_LOCATION }}/${{ env.IMAGE }} \
+        --set-env-vars=HOST=0.0.0.0 --set-secrets=BOT_TOKEN=BOT_TOKEN_PROD:latest \
+        --memory 128Mi --cpu 1 --max-instances 5
