@@ -1,26 +1,3 @@
-(rule
- (alias create-actions)
- (deps (universe))
- (action
-  (progn
-   (system "mkdir -p ../../actions")
-   (system "cd ../../actions && cp -f ../result/bin/avatar-bot exec")
-   (system "cd ../../actions && zip avatar-bot exec"))))
-
-(rule
- (alias deploy)
- (deps (universe))
- (action
-  (system
-   "cd ../.. && ibmcloud fn action create avatar-bot --native actions/avatar-bot.zip --param bot_token $BOT_TOKEN --web true")))
-
-(rule
- (alias redeploy)
- (deps (universe))
- (action
-  (system
-   "cd ../.. && ibmcloud fn action update avatar-bot --native actions/avatar-bot.zip")))
-
 (env
  (static
   (flags
