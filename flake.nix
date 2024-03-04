@@ -38,17 +38,13 @@
 
       getDevPackages = pkgs:
         with pkgs;[
-          zip
-
           # Nix tools
           nil
           nixpkgs-fmt
-        ];
 
-      getIbmcloud = pkgs: with pkgs;[
-        # Faas provider
-        ibmcloud-cli
-      ];
+          # Cloud provider
+          google-cloud-sdk
+        ];
 
       overlay = final: prev: {
         ${package} = prev.${package}.overrideAttrs
@@ -112,8 +108,7 @@
                 inputsFrom = [ packages.${system}.default ];
                 buildInputs =
                   getOcamlDevPackages pkgs scope
-                  ++ getDevPackages pkgs
-                  ++ getIbmcloud nixpkgs-unstable.legacyPackages.${system};
+                  ++ getDevPackages pkgs;
 
                 shellHook = ''
                   set -a
@@ -159,8 +154,7 @@
           devShells.x86_64-linux.static = pkgsMusl.mkShell {
             inputsFrom = [ mainMusl ];
             buildInputs = getOcamlDevPackages pkgs scopeMusl
-              ++ getDevPackages pkgs
-              ++ getIbmcloud nixpkgs-unstable.legacyPackages.x86_64-linux;
+              ++ getDevPackages pkgs;
 
             shellHook = ''
               set -a
