@@ -6,11 +6,11 @@ This Telegram bot can ukrainianize your avatar. Just send a picture and you will
 
 ## Architecture
 
-Architecture is pretty simple: having received a new message for the bot, Telegram sends it to the Cloud function endpoint through a WebHook. Then, this application is invoked with some parameters, which include information about the message and parses parameters to do its job.
+Architecture is pretty simple: having received a new message for the bot, Telegram sends it to the Cloud Run through a WebHook. Then, it transmits the request to this application wherein all job is done.
 
 ### Build
 
-This project supports building through Opam and Nix. However, static compilation for Cloud functions is only available through Nix currently.
+This project supports building through Opam and Nix. However, static compilation is only available through Nix currently.
 
 #### Opam
 
@@ -31,6 +31,18 @@ To build statically:
 nix build .#static
 ```
 
+Also, one can build container images:
+
+```bash
+nix build .#docker
+```
+
+Or statically:
+
+```bash
+nix build .#staticDocker
+```
+
 ### CI/CD
 
-There are a few GitHub Actions for testing the compilation of PR through some package managers (Opam, Nix) and deploying on IBM Cloud functions after static building with Nix.
+There are a few GitHub Actions for testing the compilation of PR through some package managers (Opam, Nix) and deploying on GCP Cloud Run after building the static container image with Nix.
