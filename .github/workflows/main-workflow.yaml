@@ -6,38 +6,56 @@ on:
   push:
     branches:
       - "master"
+      
 jobs:
   nix-build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
     - uses: cachix/install-nix-action@v22
       with:
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Setup caching
+      uses: cachix/cachix-action@v14
+      with:
+        name: avatar-bot
+        authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
     - name: Build
       run: nix build
+
     - name: Build docker image
       run: nix build .#staticDocker
+
     - name: Build static
       run: nix build .#static
+
     - name: Build docker image of static
       run: nix build .#staticDocker
+
     - name: Test
       run: nix develop --command dune runtest
+
     - name: Check
       run: nix flake check
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - uses: ocaml/setup-ocaml@v2
         with:
           # Gmp built with musl is required to get the static binary. 
           # Obtaining it through Opam is difficult, so building static binary is
           # not checked here for now.
           ocaml-compiler: "5.0"
+
       - run: opam install . --deps-only --with-test
+
       - name: Build
         run: opam exec -- dune build
+
       - name: Test
         run: opam exec -- dune runtest
